@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -15,10 +16,74 @@ import (
 
 var client *hcloud.Client
 
-type MyFunctionsArguments struct {
+type Arguments struct {
 	ServerId int64 `json:"server_id" jsonschema:"required,description=The server id to be searched"`
 }
 
+type ToolHandler func(arguments Arguments) (*mcp_golang.ToolResponse, error)
+
+type Tool struct {
+	Name        string
+	Description string
+	Handler     ToolHandler
+}
+
+var tools = []Tool{
+	//
+	{
+		Name:        "get_server_list",
+		Description: "Returns all existing Server objects",
+		Handler: func(_ Arguments) (*mcp_golang.ToolResponse, error) {
+			servers, _, err := client.Server.List(context.Background(), hcloud.ServerListOpts{})
+			if err != nil {
+				return nil, err
+			}
+			ids := make([]int64, len(servers))
+			for i, server := range servers {
+				ids[i] = server.ID
+			}
+			return mcp_golang.NewToolResponse(
+				mcp_golang.NewTextContent(fmt.Sprintf("The server list is %v!", ids)),
+			), nil
+		},
+	},
+	//
+	{
+		Name:        "get_server_info_by_id",
+		Description: "Get a server by its ID, it returns the server name",
+		Handler: func(args Arguments) (*mcp_golang.ToolResponse, error) {
+			server, _, err := client.Server.GetByID(context.Background(), args.ServerId)
+			if err != nil {
+				return nil, err
+			}
+			return mcp_golang.NewToolResponse(
+				mcp_golang.NewTextContent(fmt.Sprintf("The server name is %s!", server.Name)),
+			), nil
+		},
+	},
+	//
+	{
+		Name:        "get_location_list",
+		Description: "Get a list of locations, it returns the location names",
+		Handler: func(_ Arguments) (*mcp_golang.ToolResponse, error) {
+			locations, _, err := client.Location.List(context.Background(), hcloud.LocationListOpts{})
+			if err != nil {
+				return nil, err
+			}
+
+			location_json, err := json.MarshalIndent(locations, "", "  ")
+			if err != nil {
+				return nil, err
+			}
+
+			return mcp_golang.NewToolResponse(
+				mcp_golang.NewTextContent(string(location_json)),
+			), nil
+		},
+	},
+}
+
+// LoadToken loads the Hetzner Cloud API token from the command-line flag, environment variable, or .env file
 func loadToken() string {
 	// Define command-line flag
 	token_flag := flag.String("token", "", "Hetzner Cloud API token")
@@ -53,9 +118,22 @@ func loadToken() string {
 	return hcloud_token
 }
 
+// Register Tools
+func registerTools(server *mcp_golang.Server) error {
+	for _, tool := range tools {
+		err := server.RegisterTool(tool.Name, tool.Description, tool.Handler)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// Start
 func main() {
 	done := make(chan struct{})
 
+	// New Stdio Server
 	server := mcp_golang.NewServer(stdio.NewStdioServerTransport())
 
 	// Load Hetzner Cloud token
@@ -65,40 +143,7 @@ func main() {
 	client = hcloud.NewClient(hcloud.WithToken(hcloud_token))
 
 	// Register Tool
-	err := server.RegisterTool("server", "Get a server by his id, it returns the server name", func(arguments MyFunctionsArguments) (*mcp_golang.ToolResponse, error) {
-		serverName, err := getServerById(arguments.ServerId)
-		if err != nil {
-			return nil, err
-		}
-
-		return mcp_golang.NewToolResponse(mcp_golang.NewTextContent(fmt.Sprintf("The server name is %s!", serverName))), nil
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	// Register Tool
-	err = server.RegisterTool("serverlist", "Get a list of servers, it returns the server id", func(arguments MyFunctionsArguments) (*mcp_golang.ToolResponse, error) {
-		serverIds, err := getServerListId()
-		if err != nil {
-			return nil, err
-		}
-
-		return mcp_golang.NewToolResponse(mcp_golang.NewTextContent(fmt.Sprintf("The server list is %v!", serverIds))), nil
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	// Register Tool
-	err = server.RegisterTool("locationlist", "Get a list of locations, it returns the location name", func(arguments MyFunctionsArguments) (*mcp_golang.ToolResponse, error) {
-		locationNames, err := getLocationList()
-		if err != nil {
-			return nil, err
-		}
-
-		return mcp_golang.NewToolResponse(mcp_golang.NewTextContent(fmt.Sprintf("The location list is %v!", locationNames))), nil
-	})
+	err := registerTools(server)
 	if err != nil {
 		panic(err)
 	}
@@ -109,41 +154,4 @@ func main() {
 	}
 
 	<-done
-}
-
-func getServerById(id int64) (string, error) {
-	server, _, err := client.Server.GetByID(context.Background(), id)
-	if err != nil {
-		return "", err
-	}
-
-	return server.Name, nil
-}
-
-func getServerListId() ([]int64, error) {
-	servers, _, err := client.Server.List(context.Background(), hcloud.ServerListOpts{})
-	if err != nil {
-		return nil, err
-	}
-
-	serverIds := make([]int64, len(servers))
-	for i, server := range servers {
-		serverIds[i] = server.ID
-	}
-
-	return serverIds, nil
-}
-
-func getLocationList() ([]string, error) {
-	locations, _, err := client.Location.List(context.Background(), hcloud.LocationListOpts{})
-	if err != nil {
-		return nil, err
-	}
-
-	locationNames := make([]string, len(locations))
-	for i, location := range locations {
-		locationNames[i] = location.Name
-	}
-
-	return locationNames, nil
 }
