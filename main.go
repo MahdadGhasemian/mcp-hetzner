@@ -16,71 +16,67 @@ import (
 
 var client *hcloud.Client
 
+type NoArgs struct{}
+
 type Arguments struct {
 	ServerId int64 `json:"server_id" jsonschema:"required,description=The server id to be searched"`
 }
-
-type ToolHandler func(arguments Arguments) (*mcp_golang.ToolResponse, error)
-
 type Tool struct {
 	Name        string
 	Description string
-	Handler     ToolHandler
+	Handler     interface{}
 }
 
+// Tools
 var tools = []Tool{
-	//
 	{
 		Name:        "get_server_list",
 		Description: "Returns all existing Server objects",
-		Handler: func(_ Arguments) (*mcp_golang.ToolResponse, error) {
-			servers, _, err := client.Server.List(context.Background(), hcloud.ServerListOpts{})
-			if err != nil {
-				return nil, err
-			}
-			ids := make([]int64, len(servers))
-			for i, server := range servers {
-				ids[i] = server.ID
-			}
-			return mcp_golang.NewToolResponse(
-				mcp_golang.NewTextContent(fmt.Sprintf("The server list is %v!", ids)),
-			), nil
+		Handler: func(args NoArgs) (*mcp_golang.ToolResponse, error) {
+			return handleResponse(func() ([]*hcloud.Server, error) {
+				servers, _, err := client.Server.List(context.Background(), hcloud.ServerListOpts{})
+				return servers, err
+			})
 		},
 	},
-	//
 	{
 		Name:        "get_server_info_by_id",
-		Description: "Get a server by its ID, it returns the server name",
+		Description: "Get a server by its ID, it returns the server object info",
 		Handler: func(args Arguments) (*mcp_golang.ToolResponse, error) {
-			server, _, err := client.Server.GetByID(context.Background(), args.ServerId)
-			if err != nil {
-				return nil, err
-			}
-			return mcp_golang.NewToolResponse(
-				mcp_golang.NewTextContent(fmt.Sprintf("The server name is %s!", server.Name)),
-			), nil
+			return handleResponse(func() (*hcloud.Server, error) {
+				server, _, err := client.Server.GetByID(context.Background(), args.ServerId)
+				return server, err
+			})
 		},
 	},
-	//
 	{
 		Name:        "get_location_list",
-		Description: "Get a list of locations, it returns the location names",
-		Handler: func(_ Arguments) (*mcp_golang.ToolResponse, error) {
-			locations, _, err := client.Location.List(context.Background(), hcloud.LocationListOpts{})
-			if err != nil {
-				return nil, err
-			}
-
-			location_json, err := json.MarshalIndent(locations, "", "  ")
-			if err != nil {
-				return nil, err
-			}
-
-			return mcp_golang.NewToolResponse(
-				mcp_golang.NewTextContent(string(location_json)),
-			), nil
+		Description: "Returns all locations objects",
+		Handler: func(args NoArgs) (*mcp_golang.ToolResponse, error) {
+			return handleResponse(func() ([]*hcloud.Location, error) {
+				locations, _, err := client.Location.List(context.Background(), hcloud.LocationListOpts{})
+				return locations, err
+			})
 		},
 	},
+}
+
+// Generalized response handler for listing and getting server/location info
+func handleResponse[T any](fetchFunc func() (T, error)) (*mcp_golang.ToolResponse, error) {
+	// Fetch data using the provided fetch function
+	data, err := fetchFunc()
+	if err != nil {
+		return nil, err
+	}
+
+	// Marshal the data into the desired format
+	marshaled_data, err := json.MarshalIndent(data, "", "  ")
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal data: %w", err)
+	}
+
+	// Return the response
+	return mcp_golang.NewToolResponse(mcp_golang.NewTextContent(string(marshaled_data))), nil
 }
 
 // LoadToken loads the Hetzner Cloud API token from the command-line flag, environment variable, or .env file
@@ -121,9 +117,8 @@ func loadToken() string {
 // Register Tools
 func registerTools(server *mcp_golang.Server) error {
 	for _, tool := range tools {
-		err := server.RegisterTool(tool.Name, tool.Description, tool.Handler)
-		if err != nil {
-			return err
+		if err := server.RegisterTool(tool.Name, tool.Description, tool.Handler); err != nil {
+			return fmt.Errorf("failed to register tool %s: %w", tool.Name, err)
 		}
 	}
 	return nil
@@ -148,6 +143,7 @@ func main() {
 		panic(err)
 	}
 
+	// Run server
 	err = server.Serve()
 	if err != nil {
 		panic(err)
