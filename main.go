@@ -18,9 +18,30 @@ var client *hcloud.Client
 
 type NoArgs struct{}
 
-type Arguments struct {
+type SSHKeyReadArgs struct {
+	SshKeyId int64 `json:"ssh_key_id" jsonschema:"required,description=The ssh-key id to be searched"`
+}
+
+type SSHKeyCreateArgs struct {
+	Name      string            `json:"name" jsonschema:"required,description:Name of the SSH key"`
+	PublicKey string            `json:"public_key" jsonschema:"required,description:Public key"`
+	Labels    map[string]string `json:"labels,omitempty" jsonschema:"description:Optional, User-defined labels (key/value pairs) for the Resource."`
+}
+
+type SSHKeyUpdateArgs struct {
+	SshKeyId int64             `json:"ssh_key_id" jsonschema:"required,description=The ssh-key id to be searched"`
+	Name     string            `json:"name" jsonschema:"required,description:Name of the SSH key"`
+	Labels   map[string]string `json:"labels,omitempty" jsonschema:"description:Optional, User-defined labels (key/value pairs) for the Resource."`
+}
+
+type ServerReadArgs struct {
 	ServerId int64 `json:"server_id" jsonschema:"required,description=The server id to be searched"`
 }
+
+type LocationReadArgs struct {
+	LocationId int64 `json:"location_id" jsonschema:"required,description=The location id to be searched"`
+}
+
 type Tool struct {
 	Name        string
 	Description string
@@ -29,33 +50,106 @@ type Tool struct {
 
 // Tools
 var tools = []Tool{
+	// SSH Keys
+	{
+		Name:        "get_ssh_key_list",
+		Description: "Returns all ssh-key objects. SSH keys are public keys you provide to the cloud system. They can be injected into Servers at creation time.",
+		Handler: func(args NoArgs) (*mcp_golang.ToolResponse, error) {
+			return handleResponse(func() ([]*hcloud.SSHKey, error) {
+				result, _, err := client.SSHKey.List(context.Background(), hcloud.SSHKeyListOpts{})
+				return result, err
+			})
+		},
+	},
+	{
+		Name:        "create_a_ssh_key",
+		Description: "Creates a new SSH key with the given name and public_key. Once an SSH key is created, it can be used in other calls such as creating Servers.",
+		Handler: func(args SSHKeyCreateArgs) (*mcp_golang.ToolResponse, error) {
+			return handleResponse(func() (*hcloud.SSHKey, error) {
+				result, _, err := client.SSHKey.Create(context.Background(), hcloud.SSHKeyCreateOpts{Name: args.Name, PublicKey: args.PublicKey, Labels: args.Labels})
+				return result, err
+			})
+		},
+	},
+	{
+		Name:        "get_ssh_key_by_id",
+		Description: "Get a SSH key by its ID, it returns a specific ssh key object info",
+		Handler: func(args SSHKeyReadArgs) (*mcp_golang.ToolResponse, error) {
+			return handleResponse(func() (*hcloud.SSHKey, error) {
+				result, _, err := client.SSHKey.GetByID(context.Background(), args.SshKeyId)
+				return result, err
+			})
+		},
+	},
+	{
+		Name:        "update_a_ssh_key",
+		Description: "Updates a SSH key by its ID. You can update an SSH key name and an SSH key labels.",
+		Handler: func(args SSHKeyUpdateArgs) (*mcp_golang.ToolResponse, error) {
+			return handleResponse(func() (*hcloud.SSHKey, error) {
+				ssh_key, _, err := client.SSHKey.GetByID(context.Background(), args.SshKeyId)
+				if err != nil {
+					return nil, err
+				}
+				result, _, err := client.SSHKey.Update(context.Background(), ssh_key, hcloud.SSHKeyUpdateOpts{Name: args.Name, Labels: args.Labels})
+				return result, err
+			})
+		},
+	},
+	{
+		Name:        "delete_ssh_key_by_id",
+		Description: "Deletes permanently a SSH key by its ID",
+		Handler: func(args SSHKeyUpdateArgs) (*mcp_golang.ToolResponse, error) {
+			return handleResponse(func() (*hcloud.SSHKey, error) {
+				ssh_key, _, err := client.SSHKey.GetByID(context.Background(), args.SshKeyId)
+				if err != nil {
+					return nil, err
+				}
+				_, err = client.SSHKey.Delete(context.Background(), ssh_key)
+				return ssh_key, err
+			})
+		},
+	},
+
+	// Location
+	{
+		Name:        "get_location_list",
+		Description: "Returns all locations objects",
+		Handler: func(args NoArgs) (*mcp_golang.ToolResponse, error) {
+			return handleResponse(func() ([]*hcloud.Location, error) {
+				result, _, err := client.Location.List(context.Background(), hcloud.LocationListOpts{})
+				return result, err
+			})
+		},
+	},
+	{
+		Name:        "get_location_info_by_id",
+		Description: "Get a location by its ID, it returns the location object info",
+		Handler: func(args LocationReadArgs) (*mcp_golang.ToolResponse, error) {
+			return handleResponse(func() (*hcloud.Location, error) {
+				result, _, err := client.Location.GetByID(context.Background(), args.LocationId)
+				return result, err
+			})
+		},
+	},
+
+	// Server
 	{
 		Name:        "get_server_list",
 		Description: "Returns all existing Server objects",
 		Handler: func(args NoArgs) (*mcp_golang.ToolResponse, error) {
 			return handleResponse(func() ([]*hcloud.Server, error) {
-				servers, _, err := client.Server.List(context.Background(), hcloud.ServerListOpts{})
-				return servers, err
+				result, _, err := client.Server.List(context.Background(), hcloud.ServerListOpts{})
+				return result, err
 			})
 		},
 	},
 	{
 		Name:        "get_server_info_by_id",
 		Description: "Get a server by its ID, it returns the server object info",
-		Handler: func(args Arguments) (*mcp_golang.ToolResponse, error) {
+		Handler: func(args ServerReadArgs) (*mcp_golang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.Server, error) {
-				server, _, err := client.Server.GetByID(context.Background(), args.ServerId)
-				return server, err
-			})
-		},
-	},
-	{
-		Name:        "get_location_list",
-		Description: "Returns all locations objects",
-		Handler: func(args NoArgs) (*mcp_golang.ToolResponse, error) {
-			return handleResponse(func() ([]*hcloud.Location, error) {
-				locations, _, err := client.Location.List(context.Background(), hcloud.LocationListOpts{})
-				return locations, err
+				result, _, err := client.Server.GetByID(context.Background(), args.ServerId)
+				return result, err
 			})
 		},
 	},

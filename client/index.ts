@@ -70,46 +70,52 @@ class MCPClient {
 
     if (!this.anthropic) return;
 
-    const response = await this.anthropic.messages.create({
-      model: ANTHROPIC_MODEL!,
-      max_tokens: +ANTHROPIC_MAX_TOKENS,
-      messages,
-      tools: this.anthropicTools,
-    });
-
+    let round = 0;
     const finalText = [];
-    const toolResults = [];
+    let shouldContinue = true;
 
-    for (const content of response.content) {
-      if (content.type === "text") {
-        finalText.push(content.text);
-      } else if (content.type === "tool_use") {
-        const toolName = content.name;
-        const toolArgs = content.input as { [x: string]: unknown } | undefined;
+    while (shouldContinue) {
+      const response = await this.anthropic.messages.create({
+        model: ANTHROPIC_MODEL!,
+        max_tokens: +ANTHROPIC_MAX_TOKENS,
+        messages,
+        tools: this.anthropicTools,
+      });
 
-        const result = await this.mcp.callTool({
-          name: toolName,
-          arguments: toolArgs,
-        });
-        toolResults.push(result);
+      shouldContinue = false;
+
+      for (const content of response.content) {
+        round += 1;
         finalText.push(
-          `[Calling tool ${toolName} with args ${JSON.stringify(toolArgs)}]`
+          `Round ${round} ---------------------------------------`
         );
+        if (content.type === "text") {
+          finalText.push(content.text);
+        } else if (content.type === "tool_use") {
+          shouldContinue = true;
 
-        messages.push({
-          role: "user",
-          content: result.content as string,
-        });
+          const toolName = content.name;
+          const toolArgs = content.input as { [x: string]: unknown } | undefined;
 
-        const response = await this.anthropic.messages.create({
-          model: ANTHROPIC_MODEL!,
-          max_tokens: +ANTHROPIC_MAX_TOKENS,
-          messages,
-        });
+          messages.push({
+            role: "assistant",
+            content: `[Calling tool ${toolName} with args ${JSON.stringify(toolArgs)}]` as string,
+          });
 
-        finalText.push(
-          response.content[0].type === "text" ? response.content[0].text : ""
-        );
+          const result = await this.mcp.callTool({
+            name: toolName,
+            arguments: toolArgs,
+          });
+
+          finalText.push(
+            `[Calling tool ${toolName} with args ${JSON.stringify(toolArgs)}]`
+          );
+
+          messages.push({
+            role: "user",
+            content: result.content  as string,
+          });
+        }
       }
     }
 
