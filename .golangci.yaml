@@ -1,0 +1,55 @@
+---
+version: "2"
+
+run:
+  timeout: 2m
+  tests: true
+
+linters:
+  enable:
+    - revive            # Replacement for golint, supports naming rules
+    # - staticcheck       # Best general-purpose linter
+    # - govet             # Built-in Go vet
+    # - errcheck          # Checks that errors are handled
+    # - unused            # Checks for unused variables/functions/imports
+  settings:
+    revive:
+      enable-all-rules: true
+      severity: "warning"
+      rules:
+        # https://github.com/mgechev/revive/blob/HEAD/RULES_DESCRIPTIONS.md#line-length-limit
+        - name: line-length-limit
+          severity: warning
+          disabled: false
+          exclude: [""]
+          arguments: [250]
+        # https://github.com/mgechev/revive/blob/HEAD/RULES_DESCRIPTIONS.md#unhandled-error
+        - name: unhandled-error
+          severity: warning
+          disabled: false
+          exclude: [""]
+          arguments:
+            - "fmt.Printf"
+            - "fmt.Println"
+        # https://github.com/mgechev/revive/blob/HEAD/RULES_DESCRIPTIONS.md#max-public-structs
+        - name: max-public-structs
+          severity: warning
+          disabled: false
+          exclude: [""]
+          arguments: [30]
+
+
+
+# revive:
+#   severity: warning
+#   rules:
+#     - name: var-naming
+#       arguments: ["camelCase"]
+#     - name: function-naming
+#       arguments: ["camelCase"]
+#     - name: package-comments
+#     - name: indent-error-flow
+#     - name: error-naming
+#       arguments: ["err", "error"]
+#     - name: blank-imports
+#       arguments: ["allow-test-files"]

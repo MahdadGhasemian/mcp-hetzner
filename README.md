@@ -21,3 +21,14 @@ go build
 ```bash
 node ./client/build/index.js ./mcp-hetzner
 ```
+
+## Lint
+```bash
+# install golangci-lint and the run:
+golangci-lint run
+```
+
+## Inspector
+```bash
+npx @modelcontextprotocol/inspector
+```
