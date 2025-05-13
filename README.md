@@ -40,7 +40,7 @@ npx @modelcontextprotocol/inspector
   - [x] Locations
   - [x] Datacenters
   - [x] Firewall
-  - [ ] Floating IPs
+  - [x] Floating IPs
   - [x] Servers
   - [ ] Images
   - [ ] ISOs

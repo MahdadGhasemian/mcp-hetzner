@@ -77,6 +77,7 @@ func registerTools(server *mcpgolang.Server) error {
 		datacenterTools,
 		sshkeyTools,
 		firewallTools,
+		floatingIPTools,
 		serverTools,
 	}
 
