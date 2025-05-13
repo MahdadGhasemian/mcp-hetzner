@@ -43,7 +43,7 @@ npx @modelcontextprotocol/inspector
   - [x] Floating IPs
   - [x] Servers
   - [x] Images
-  - [ ] ISOs
+  - [x] ISOs
   - [ ] Placement Groups
   - [ ] Primary IPs
   - [ ] Server Typs
