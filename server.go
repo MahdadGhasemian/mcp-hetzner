@@ -13,17 +13,6 @@ type ServerReadArgs struct {
 	ServerID int64 `json:"server_id" jsonschema:"required,description=The server id to be searched"`
 }
 
-// ServerCreateArgs contains the necessary fields to create a new server,
-type ServerCreateArgs struct {
-	Name           string            `json:"name" jsonschema:"required"`
-	ServerTypeName string            `json:"server_type_name" jsonschema:"required"`
-	ImageName      string            `json:"image_name" jsonschema:"required"`
-	LocationName   string            `json:"location_name" jsonschema:"required"`
-	DatacenterName string            `json:"datacenter_name" jsonschema:"required"`
-	SSHKeyNames    []string          `json:"ssh_key_names" jsonschema:"required"`
-	Labels         map[string]string `json:"labels,omitempty"`
-}
-
 // ServerTools
 var serverTools = []Tool{
 	{
@@ -32,19 +21,6 @@ var serverTools = []Tool{
 		Handler: func(_ NoArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() ([]*hcloud.Server, error) {
 				result, _, err := client.Server.List(context.Background(), hcloud.ServerListOpts{})
-				return result, err
-			})
-		},
-	},
-	{
-		Name:        "create_a_server",
-		Description: "Creates a new Server. Returns preliminary information about the Server as well as an Action that covers progress of creation.",
-		Handler: func(args ServerCreateArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() (hcloud.ServerCreateResult, error) {
-				result, _, err := client.Server.Create(context.Background(), hcloud.ServerCreateOpts{
-					Name:   args.Name,
-					Labels: args.Labels,
-				})
 				return result, err
 			})
 		},

@@ -1,13 +1,13 @@
 # mcp-hetzner
 A Go Model Context Protocol (MCP) server for interacting with the Hetzner Cloud API.
 
-## Build Client
+## 🛠 Build Client
 ```bash
 npm --prefix ./client i
 npm --prefix ./client run build
 ```
 
-## Build Server
+## 🖥 Build Server
 
 ```bash
 go mod init github.com/MahdadGhasemian/mcp-hetzner
@@ -16,19 +16,58 @@ go build
 # go run main.go
 ```
 
-## Run Client
+## 🚀 Run Client
 
 ```bash
 node ./client/build/index.js ./mcp-hetzner
 ```
 
-## Lint
+## ✅ Lint
 ```bash
 # install golangci-lint and the run:
 golangci-lint run
 ```
 
-## Inspector
+## 🔍 Inspector
 ```bash
 npx @modelcontextprotocol/inspector
 ```
+
+## 🗺 Roadmap
+- [ ] Implement all **GET** and **LIST** operations for:
+  - [ ] Certificates
+  - [x] SSH Keys
+  - [x] Locations
+  - [x] Datacenters
+  - [x] Firewall
+  - [ ] Floating IPs
+  - [x] Servers
+  - [ ] Images
+  - [ ] ISOs
+  - [ ] Placement Groups
+  - [ ] Primary IPs
+  - [ ] Server Typs
+  - [ ] Load Balancers
+  - [ ] Load Balancer Types
+  - [ ] Networks
+  - [ ] Valumes
+  - [ ] Pricing
+
+- [ ] Add a configuration flag or setting to:
+  - [ ] Enable **read-only mode** (GET/LIST only)
+  - [ ] Enable **read-write mode** (GET/LIST + CREATE/UPDATE/DELETE)
+
+- [ ] Implement **write operations** **create/update**:
+  - [ ] Certificates
+  - [ ] SSH Keys
+  - [ ] Firewall
+  - [ ] Floating IPs
+  - [ ] Servers
+  - [ ] Images
+  - [ ] Placement Groups
+  - [ ] Primary IPs
+  - [ ] Load Balancers
+  - [ ] Networks
+  - [ ] Valumes
+
+- [ ] Add **delete capabilities** for supported resources
