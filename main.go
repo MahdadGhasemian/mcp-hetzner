@@ -86,6 +86,7 @@ func registerTools(server *mcpgolang.Server) error {
 		serverTypeTools,
 		loadBalancerTools,
 		loadBalancerTypeTools,
+		networkTools,
 	}
 
 	var allTools []Tool

@@ -49,7 +49,7 @@ npx @modelcontextprotocol/inspector
   - [x] Server Typs
   - [x] Load Balancers
   - [x] Load Balancer Types
-  - [ ] Networks
+  - [x] Networks
   - [ ] Valumes
   - [ ] Pricing
 
