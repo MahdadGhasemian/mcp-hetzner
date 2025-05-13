@@ -22,7 +22,7 @@ type PlacementGroupReadByNameArgs struct {
 // PlacementGroupTools
 var placementGroupTools = []Tool{
 	{
-		Name:        "get_all_placementGroups",
+		Name:        "get_all_placement_groups",
 		Description: "Returns all PlacementGroups objects.",
 		Handler: func(_ NoArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() ([]*hcloud.PlacementGroup, error) {
@@ -32,7 +32,7 @@ var placementGroupTools = []Tool{
 		},
 	},
 	{
-		Name:        "get_a_placementGroup_by_id",
+		Name:        "get_a_placement_group_by_id",
 		Description: "Retrieves a PlacementGroup by its ID. If the PlacementGroup does not exist, nil is returned.",
 		Handler: func(args PlacementGroupReadByIDArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.PlacementGroup, error) {
@@ -42,7 +42,7 @@ var placementGroupTools = []Tool{
 		},
 	},
 	{
-		Name:        "get_a_placementGroup_by_name",
+		Name:        "get_a_placement_group_by_name",
 		Description: "Retrieves a PlacementGroup by its Name. If the PlacementGroup does not exist, nil is returned.",
 		Handler: func(args PlacementGroupReadByNameArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.PlacementGroup, error) {

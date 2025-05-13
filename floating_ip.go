@@ -22,7 +22,7 @@ type FloatingIPReadByNameArgs struct {
 // FloatingIPTools
 var floatingIPTools = []Tool{
 	{
-		Name:        "get_all_floatingIPs",
+		Name:        "get_all_floating_ips",
 		Description: "Returns all FloatingIPs objects.",
 		Handler: func(_ NoArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() ([]*hcloud.FloatingIP, error) {
@@ -32,7 +32,7 @@ var floatingIPTools = []Tool{
 		},
 	},
 	{
-		Name:        "get_a_floatingIP_by_id",
+		Name:        "get_a_floating_ip_by_id",
 		Description: "Retrieves a FloatingIP by its ID. If the FloatingIP does not exist, nil is returned.",
 		Handler: func(args FloatingIPReadByIDArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.FloatingIP, error) {
@@ -42,7 +42,7 @@ var floatingIPTools = []Tool{
 		},
 	},
 	{
-		Name:        "get_a_floatingIP_by_name",
+		Name:        "get_a_floating_ip_by_name",
 		Description: "Retrieves a FloatingIP by its Name. If the FloatingIP does not exist, nil is returned.",
 		Handler: func(args FloatingIPReadByNameArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.FloatingIP, error) {
