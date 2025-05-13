@@ -72,6 +72,7 @@ func loadToken() string {
 // Register Tools
 func registerTools(server *mcpgolang.Server) error {
 	all := [][]Tool{
+		certificateTools,
 		locationTools,
 		datacenterTools,
 		sshkeyTools,

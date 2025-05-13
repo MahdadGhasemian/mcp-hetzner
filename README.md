@@ -35,7 +35,7 @@ npx @modelcontextprotocol/inspector
 
 ## 🗺 Roadmap
 - [ ] Implement all **GET** and **LIST** operations for:
-  - [ ] Certificates
+  - [x] Certificates
   - [x] SSH Keys
   - [x] Locations
   - [x] Datacenters
