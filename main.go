@@ -65,12 +65,6 @@ type ListArgs struct {
 	LabelSelector string `json:"label_selector" jsonschema:"description=Label selector for filtering by labels"`
 }
 
-// ServerReadArgs represents the arguments required to read a server.
-// It contains the server ID that is needed to perform the lookup.
-type ServerReadArgs struct {
-	ServerID int64 `json:"server_id" jsonschema:"required,description=The server id to be searched"`
-}
-
 // Tool represents a tool with a name, description, and handler function.
 type Tool struct {
 	Name        string
@@ -183,28 +177,6 @@ var tools = []Tool{
 			})
 		},
 	},
-
-	// Server
-	{
-		Name:        "get_server_list",
-		Description: "Returns all existing Server objects",
-		Handler: func(_ NoArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() ([]*hcloud.Server, error) {
-				result, _, err := client.Server.List(context.Background(), hcloud.ServerListOpts{})
-				return result, err
-			})
-		},
-	},
-	{
-		Name:        "get_server_info_by_id",
-		Description: "Get a server by its ID, it returns the server object info",
-		Handler: func(args ServerReadArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() (*hcloud.Server, error) {
-				result, _, err := client.Server.GetByID(context.Background(), args.ServerID)
-				return result, err
-			})
-		},
-	},
 }
 
 // Generalized response handler for listing and getting server/location info
@@ -262,10 +234,17 @@ func loadToken() string {
 
 // Register Tools
 func registerTools(server *mcpgolang.Server) error {
-	allTools := append(
+	all := [][]Tool{
 		tools,
-		firewallTools...,
-	)
+		firewallTools,
+		serverTools,
+	}
+
+	var allTools []Tool
+	for _, group := range all {
+		allTools = append(allTools, group...)
+	}
+
 	for _, tool := range allTools {
 		if err := server.RegisterTool(tool.Name, tool.Description, tool.Handler); err != nil {
 			return fmt.Errorf("failed to register tool %s: %w", tool.Name, err)
