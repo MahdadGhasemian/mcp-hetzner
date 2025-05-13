@@ -50,8 +50,8 @@ npx @modelcontextprotocol/inspector
   - [x] Load Balancers
   - [x] Load Balancer Types
   - [x] Networks
-  - [ ] Valumes
-  - [ ] Pricing
+  - [x] Valumes
+  - [x] Pricing
 
 - [ ] Add a configuration flag or setting to:
   - [ ] Enable **read-only mode** (GET/LIST only)
