@@ -47,7 +47,7 @@ npx @modelcontextprotocol/inspector
   - [x] Placement Groups
   - [x] Primary IPs
   - [x] Server Typs
-  - [ ] Load Balancers
+  - [x] Load Balancers
   - [ ] Load Balancer Types
   - [ ] Networks
   - [ ] Valumes
