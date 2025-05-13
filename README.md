@@ -42,7 +42,7 @@ npx @modelcontextprotocol/inspector
   - [x] Firewall
   - [x] Floating IPs
   - [x] Servers
-  - [ ] Images
+  - [x] Images
   - [ ] ISOs
   - [ ] Placement Groups
   - [ ] Primary IPs
