@@ -10,13 +10,13 @@ import (
 // FloatingIPReadByIDArgs represents the arguments required to read an FloatingIP by ID.
 // It contains the FloatingIP ID that is needed to perform the lookup.
 type FloatingIPReadByIDArgs struct {
-	ID int64 `json:"id" jsonschema:"required,description=The floatingIP id to be searched"`
+	ID int64 `json:"id" jsonschema:"required,description=The Floating IP id to be searched"`
 }
 
 // FloatingIPReadByNameArgs represents the arguments required to read an FloatingIP by Name.
 // It contains the FloatingIP Name that is needed to perform the lookup.
 type FloatingIPReadByNameArgs struct {
-	Name string `json:"name" jsonschema:"required,description=The floatingIP name to be searched"`
+	Name string `json:"name" jsonschema:"required,description=The Floating IP name to be searched"`
 }
 
 // FloatingIPTools

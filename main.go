@@ -81,6 +81,7 @@ func registerTools(server *mcpgolang.Server) error {
 		serverTools,
 		imageTools,
 		isoTools,
+		placementGroupTools,
 	}
 
 	var allTools []Tool
