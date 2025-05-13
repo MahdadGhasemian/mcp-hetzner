@@ -22,7 +22,7 @@ type CertificateReadByNameArgs struct {
 // CertificateTools
 var certificateTools = []Tool{
 	{
-		Name:        "get_certificate_list",
+		Name:        "get_all_certificates",
 		Description: "Returns all Certificates objects.",
 		Handler: func(_ NoArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() ([]*hcloud.Certificate, error) {
@@ -32,7 +32,7 @@ var certificateTools = []Tool{
 		},
 	},
 	{
-		Name:        "get_certificate_by_id",
+		Name:        "get_a_certificate_by_id",
 		Description: "Retrieves a Certificate by its ID. If the Certificate does not exist, nil is returned.",
 		Handler: func(args CertificateReadByIDArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.Certificate, error) {
@@ -42,7 +42,7 @@ var certificateTools = []Tool{
 		},
 	},
 	{
-		Name:        "get_certificate_by_name",
+		Name:        "get_a_certificate_by_name",
 		Description: "Retrieves a Certificate by its Name. If the Certificate does not exist, nil is returned.",
 		Handler: func(args CertificateReadByNameArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.Certificate, error) {

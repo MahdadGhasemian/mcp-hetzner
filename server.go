@@ -7,30 +7,46 @@ import (
 	mcpgolang "github.com/metoro-io/mcp-golang"
 )
 
-// ServerReadArgs represents the arguments required to read a server.
-// It contains the server ID that is needed to perform the lookup.
-type ServerReadArgs struct {
-	ServerID int64 `json:"server_id" jsonschema:"required,description=The server id to be searched"`
+// ServerReadByIDArgs represents the arguments required to read an Server by ID.
+// It contains the Server ID that is needed to perform the lookup.
+type ServerReadByIDArgs struct {
+	ID int64 `json:"id" jsonschema:"required,description=The server id to be searched"`
+}
+
+// ServerReadByNameArgs represents the arguments required to read an Server by Name.
+// It contains the Server Name that is needed to perform the lookup.
+type ServerReadByNameArgs struct {
+	Name string `json:"name" jsonschema:"required,description=The server name to be searched"`
 }
 
 // ServerTools
 var serverTools = []Tool{
 	{
-		Name:        "get_server_list",
-		Description: "Returns all existing Server objects",
+		Name:        "get_all_servers",
+		Description: "Returns all Servers objects.",
 		Handler: func(_ NoArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() ([]*hcloud.Server, error) {
-				result, _, err := client.Server.List(context.Background(), hcloud.ServerListOpts{})
+				result, err := client.Server.All(context.Background())
 				return result, err
 			})
 		},
 	},
 	{
-		Name:        "get_server_info_by_id",
-		Description: "Get a server by its ID, it returns the server object info",
-		Handler: func(args ServerReadArgs) (*mcpgolang.ToolResponse, error) {
+		Name:        "get_a_server_by_id",
+		Description: "Retrieves a Server by its ID. If the Server does not exist, nil is returned.",
+		Handler: func(args ServerReadByIDArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.Server, error) {
-				result, _, err := client.Server.GetByID(context.Background(), args.ServerID)
+				result, _, err := client.Server.GetByID(context.Background(), args.ID)
+				return result, err
+			})
+		},
+	},
+	{
+		Name:        "get_a_server_by_name",
+		Description: "Retrieves a Server by its Name. If the Server does not exist, nil is returned.",
+		Handler: func(args ServerReadByNameArgs) (*mcpgolang.ToolResponse, error) {
+			return handleResponse(func() (*hcloud.Server, error) {
+				result, _, err := client.Server.GetByName(context.Background(), args.Name)
 				return result, err
 			})
 		},
