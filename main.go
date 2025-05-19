@@ -41,9 +41,9 @@ func loadToken() string {
 	flag.Parse()
 
 	// Try to load .env file from executable directory
-	exPath, err := os.Executable()
+	cwd, err := os.Getwd()
 	if err == nil {
-		envPath := filepath.Join(filepath.Dir(exPath), ".env")
+		envPath := filepath.Join(cwd, ".env")
 		_ = godotenv.Load(envPath) // ignore error
 	}
 

@@ -10,7 +10,7 @@ npm --prefix ./client run build
 ## 🖥 Build Server
 
 ```bash
-go mod init github.com/MahdadGhasemian/mcp-hetzner
+go mod init github.com/MahdadGhasemian/mcp-hetzner-go
 go mod tidy
 go build
 # go run main.go

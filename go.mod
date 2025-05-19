@@ -5,7 +5,7 @@ go 1.24.1
 require (
 	github.com/hetznercloud/hcloud-go/v2 v2.21.0
 	github.com/joho/godotenv v1.5.1
-	github.com/metoro-io/mcp-golang v0.11.0
+	github.com/metoro-io/mcp-golang v0.12.0
 )
 
 require (
