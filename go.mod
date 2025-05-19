@@ -1,4 +1,4 @@
-module github.com/MahdadGhasemian/mcp-hetzner
+module github.com/MahdadGhasemian/mcp-hetzner-go
 
 go 1.24.1
 
