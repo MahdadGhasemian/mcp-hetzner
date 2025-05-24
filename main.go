@@ -80,11 +80,9 @@ func isAllowed(toolRestriction, globalRestriction Restriction) bool {
 	return false
 }
 
-// Register Tools
-func registerTools(server *mcpgolang.Server, restriction Restriction) error {
-	fmt.Println("Global restriction mode:", restriction)
-
-	all := [][]Tool{
+// Allowed Tools
+func collectAllowedTools(restriction Restriction) []Tool {
+	toolGroups := [][]Tool{
 		certificateTools,
 		locationTools,
 		datacenterTools,
@@ -104,11 +102,12 @@ func registerTools(server *mcpgolang.Server, restriction Restriction) error {
 		priceTools,
 	}
 
-	var allTools []Tool
-	for _, group := range all {
+	var allowed []Tool
+
+	for _, group := range toolGroups {
 		for _, tool := range group {
 			if isAllowed(tool.Restriction, restriction) {
-				allTools = append(allTools, tool)
+				allowed = append(allowed, tool)
 			} else {
 				fmt.Printf("Skipping tool %s due to restriction: tool requires %s, global is %s\n",
 					tool.Name, tool.Restriction, restriction)
@@ -116,11 +115,19 @@ func registerTools(server *mcpgolang.Server, restriction Restriction) error {
 		}
 	}
 
+	return allowed
+}
+
+// Register Tools
+func registerTools(server *mcpgolang.Server, restriction Restriction) error {
+	allTools := collectAllowedTools(restriction)
+
 	for _, tool := range allTools {
 		if err := server.RegisterTool(tool.Name, tool.Description, tool.Handler); err != nil {
 			return fmt.Errorf("failed to register tool %s: %w", tool.Name, err)
 		}
 	}
+
 	return nil
 }
 

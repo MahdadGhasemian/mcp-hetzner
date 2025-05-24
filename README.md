@@ -1,4 +1,4 @@
-# mcp-hetzner
+# MCP Hetzner Go
 A Go Model Context Protocol (MCP) server for interacting with the Hetzner Cloud API.
 
 ## 🛠 Build Client
@@ -17,7 +17,7 @@ go build -o mcphetzner
 
 ## 🚀 Run Client
 ```bash
-node ./client/build/index.js ./mcp-hetzner
+node ./client/build/index.js ./mcphetzner
 ```
 
 ## ⚠️ Usage Restrictions
@@ -39,11 +39,11 @@ Edit your configuration or pass the relevant environment variable/flag at launch
 
 - For **read-only** (default; safe for inspection and monitoring):
     ```
-    ./mcphetzner --mode=read_only
+    ./mcphetzner --restriction=read_only
     ```
 - For **read-write** (use with caution!):
     ```
-    ./mcphetzner --mode=read_write
+    ./mcphetzner --restriction=read_write
     ```
 
 ## ✅ Lint
