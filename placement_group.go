@@ -30,6 +30,7 @@ var placementGroupTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_placement_group_by_id",
@@ -40,6 +41,7 @@ var placementGroupTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_placement_group_by_name",
@@ -50,5 +52,6 @@ var placementGroupTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 }

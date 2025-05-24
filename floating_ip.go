@@ -30,6 +30,7 @@ var floatingIPTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_floating_ip_by_id",
@@ -40,6 +41,7 @@ var floatingIPTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_floating_ip_by_name",
@@ -50,5 +52,6 @@ var floatingIPTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 }

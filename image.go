@@ -24,6 +24,7 @@ var imageTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_image_by_id",
@@ -34,5 +35,6 @@ var imageTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 }

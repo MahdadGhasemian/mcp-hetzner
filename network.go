@@ -30,6 +30,7 @@ var networkTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_network_by_id",
@@ -40,6 +41,7 @@ var networkTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_network_by_name",
@@ -50,5 +52,6 @@ var networkTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 }

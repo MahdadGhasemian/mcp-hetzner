@@ -36,6 +36,7 @@ var primaryIPTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_primary_ip_by_id",
@@ -46,6 +47,7 @@ var primaryIPTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_primary_ip_by_name",
@@ -56,6 +58,7 @@ var primaryIPTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_primary_ip_by_ip",
@@ -66,5 +69,6 @@ var primaryIPTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 }

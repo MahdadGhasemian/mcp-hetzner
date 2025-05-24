@@ -30,6 +30,7 @@ var serverTypeTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_server_type_by_id",
@@ -40,6 +41,7 @@ var serverTypeTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_server_type_by_name",
@@ -50,5 +52,6 @@ var serverTypeTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 }

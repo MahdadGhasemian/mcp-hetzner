@@ -36,6 +36,7 @@ var sshkeyTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_ssh_key_by_id",
@@ -46,6 +47,7 @@ var sshkeyTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_ssh_key_by_name",
@@ -56,6 +58,7 @@ var sshkeyTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 	{
 		Name:        "get_a_ssh_key_by_fingerprint",
@@ -66,5 +69,6 @@ var sshkeyTools = []Tool{
 				return result, err
 			})
 		},
+		Restriction: RestrictionReadOnly,
 	},
 }

@@ -6,6 +6,17 @@ const EmptyString = ""
 // NoArgs represents an empty structure used when no arguments are required.
 type NoArgs struct{}
 
+// Restriction represents the restriction of a tool.
+type Restriction string
+
+// RestrictionReadOnly represents a read-only restriction.
+// It means that the tool can only read the resources.
+const RestrictionReadOnly Restriction = "read_only"
+
+// RestrictionReadWrite represents a read-write restriction.
+// It means that the tool can read and write the resources.
+const RestrictionReadWrite Restriction = "read_write"
+
 // ListArgs represents the arguments for listing resources.
 // It includes pagination information like page number, items per page, and a label selector for filtering.
 type ListArgs struct {
@@ -19,4 +30,5 @@ type Tool struct {
 	Name        string
 	Description string
 	Handler     any
+	Restriction Restriction
 }

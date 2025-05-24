@@ -69,8 +69,21 @@ func loadToken() string {
 	return hcloudToken
 }
 
+// Is Allowed
+func isAllowed(toolRestriction, globalRestriction Restriction) bool {
+	if globalRestriction == RestrictionReadWrite {
+		return true // global allows everything
+	}
+	if globalRestriction == RestrictionReadOnly && toolRestriction == RestrictionReadOnly {
+		return true // global read-only allows only read-only tools
+	}
+	return false
+}
+
 // Register Tools
-func registerTools(server *mcpgolang.Server) error {
+func registerTools(server *mcpgolang.Server, restriction Restriction) error {
+	fmt.Println("Global restriction mode:", restriction)
+
 	all := [][]Tool{
 		certificateTools,
 		locationTools,
@@ -93,7 +106,14 @@ func registerTools(server *mcpgolang.Server) error {
 
 	var allTools []Tool
 	for _, group := range all {
-		allTools = append(allTools, group...)
+		for _, tool := range group {
+			if isAllowed(tool.Restriction, restriction) {
+				allTools = append(allTools, tool)
+			} else {
+				fmt.Printf("Skipping tool %s due to restriction: tool requires %s, global is %s\n",
+					tool.Name, tool.Restriction, restriction)
+			}
+		}
 	}
 
 	for _, tool := range allTools {
@@ -108,6 +128,20 @@ func registerTools(server *mcpgolang.Server) error {
 func main() {
 	done := make(chan struct{})
 
+	// Define CLI flag for restriction
+	restrictionFlag := flag.String("restriction", string(RestrictionReadOnly), "Restriction for the tool")
+	flag.Parse()
+
+	// Validate restriction flag
+	var restriction Restriction
+	if *restrictionFlag == string(RestrictionReadOnly) {
+		restriction = RestrictionReadOnly
+	} else if *restrictionFlag == string(RestrictionReadWrite) {
+		restriction = RestrictionReadWrite
+	} else {
+		panic("invalid restriction")
+	}
+
 	// New Stdio Server
 	server := mcpgolang.NewServer(stdio.NewStdioServerTransport())
 
@@ -118,7 +152,7 @@ func main() {
 	client = hcloud.NewClient(hcloud.WithToken(hcloudToken))
 
 	// Register Tool
-	err := registerTools(server)
+	err := registerTools(server, restriction)
 	if err != nil {
 		panic(err)
 	}
