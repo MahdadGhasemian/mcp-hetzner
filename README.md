@@ -12,7 +12,7 @@ npm --prefix ./client run build
 ```bash
 go mod init github.com/MahdadGhasemian/mcp-hetzner-go
 go mod tidy
-go build
+go build -o mcphetzner
 # go run main.go
 ```
 
