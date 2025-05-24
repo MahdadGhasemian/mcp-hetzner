@@ -1,8 +1,6 @@
 # mcp-hetzner
 A Go Model Context Protocol (MCP) server for interacting with the Hetzner Cloud API.
 
----
-
 ## 🛠 Build Client
 ```bash
 npm --prefix ./client i
@@ -21,8 +19,6 @@ go build -o mcphetzner
 ```bash
 node ./client/build/index.js ./mcp-hetzner
 ```
-
----
 
 ## ⚠️ Usage Restrictions
 
@@ -50,8 +46,6 @@ Edit your configuration or pass the relevant environment variable/flag at launch
     ./mcphetzner --mode=read_write
     ```
 
----
-
 ## ✅ Lint
 ```bash
 # install golangci-lint and then run:
@@ -62,8 +56,6 @@ golangci-lint run
 ```bash
 npx @modelcontextprotocol/inspector
 ```
-
----
 
 ## 🗺 Roadmap
 
@@ -104,5 +96,3 @@ npx @modelcontextprotocol/inspector
   - [ ] Volumes
 
 - [ ] Add **delete capabilities** for supported resources
-
----
