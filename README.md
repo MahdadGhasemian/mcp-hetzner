@@ -1,6 +1,23 @@
 # MCP Hetzner Go
 A Go Model Context Protocol (MCP) server for interacting with the Hetzner Cloud API.
 
+## Using with Claude Desktop
+
+Create a file in ~/Library/Application Support/Claude/claude_desktop_config.json with the following contents:
+
+```json
+{
+  "mcpServers": {
+    "hetzner": {
+      "command": "<your path to golang MCP server go executable>",
+      "env": {
+        "HCLOUD_TOKEN": "YOUR-HCLOUD-TOKEN"
+      }
+    }
+  }
+}
+```
+
 ## 🛠 Build Client
 ```bash
 npm --prefix ./client i
@@ -12,7 +29,7 @@ npm --prefix ./client run build
 go mod init github.com/MahdadGhasemian/mcp-hetzner-go
 go mod tidy
 go build -o mcphetzner
-# go run main.go
+# go run .
 ```
 
 ## 🚀 Run Client

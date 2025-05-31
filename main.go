@@ -64,8 +64,6 @@ func loadToken() string {
 			"3. .env file: create a .env file with HCLOUD_TOKEN=your_token_here")
 	}
 
-	//nolint:unhandled-error
-	fmt.Println("Token loaded successfully.")
 	return hcloudToken
 }
 
@@ -108,9 +106,6 @@ func collectAllowedTools(restriction Restriction) []Tool {
 		for _, tool := range group {
 			if isAllowed(tool.Restriction, restriction) {
 				allowed = append(allowed, tool)
-			} else {
-				fmt.Printf("Skipping tool %s due to restriction: tool requires %s, global is %s\n",
-					tool.Name, tool.Restriction, restriction)
 			}
 		}
 	}
