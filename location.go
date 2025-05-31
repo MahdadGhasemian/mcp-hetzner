@@ -7,16 +7,10 @@ import (
 	mcpgolang "github.com/metoro-io/mcp-golang"
 )
 
-// LocationReadByIDArgs represents the arguments required to read an Location by ID.
-// It contains the Location ID that is needed to perform the lookup.
-type LocationReadByIDArgs struct {
-	ID int64 `json:"id" jsonschema:"required,description=The location id to be searched"`
-}
-
-// LocationReadByNameArgs represents the arguments required to read an Location by Name.
-// It contains the Location Name that is needed to perform the lookup.
-type LocationReadByNameArgs struct {
-	Name string `json:"name" jsonschema:"required,description=The location name to be searched"`
+// LocationReadArgs represents the arguments required to read an Location by ID or Name.
+// It contains the Location ID or Name that is needed to perform the lookup.
+type LocationReadArgs struct {
+	IDOrName string `json:"id_or_name" jsonschema:"required,description=The location id or name to be searched"`
 }
 
 // LocationTools
@@ -33,22 +27,11 @@ var locationTools = []Tool{
 		Restriction: RestrictionReadOnly,
 	},
 	{
-		Name:        "get_a_location_by_id",
-		Description: "Retrieves a Location by its ID. If the Location does not exist, nil is returned.",
-		Handler: func(args LocationReadByIDArgs) (*mcpgolang.ToolResponse, error) {
+		Name:        "get_a_location_by_id_or_name",
+		Description: "Retrieves a Location by its ID or Name, Get retrieves a Location by its ID if the input can be parsed as an integer, otherwise it retrieves a Location by its name. If the Location does not exist, nil is returned.",
+		Handler: func(args LocationReadArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.Location, error) {
-				result, _, err := client.Location.GetByID(context.Background(), args.ID)
-				return result, err
-			})
-		},
-		Restriction: RestrictionReadOnly,
-	},
-	{
-		Name:        "get_a_location_by_name",
-		Description: "Retrieves a Location by its Name. If the Location does not exist, nil is returned.",
-		Handler: func(args LocationReadByNameArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() (*hcloud.Location, error) {
-				result, _, err := client.Location.GetByName(context.Background(), args.Name)
+				result, _, err := client.Location.Get(context.Background(), args.IDOrName)
 				return result, err
 			})
 		},

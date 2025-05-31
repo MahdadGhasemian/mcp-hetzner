@@ -7,16 +7,10 @@ import (
 	mcpgolang "github.com/metoro-io/mcp-golang"
 )
 
-// ServerTypeReadByIDArgs represents the arguments required to read an ServerType by ID.
-// It contains the ServerType ID that is needed to perform the lookup.
-type ServerTypeReadByIDArgs struct {
-	ID int64 `json:"id" jsonschema:"required,description=The Server Type id to be searched"`
-}
-
-// ServerTypeReadByNameArgs represents the arguments required to read an ServerType by Name.
-// It contains the ServerType Name that is needed to perform the lookup.
-type ServerTypeReadByNameArgs struct {
-	Name string `json:"name" jsonschema:"required,description=The Server Type name to be searched"`
+// ServerTypeReadArgs represents the arguments required to read an ServerType by ID or Name.
+// It contains the ServerType ID or Name that is needed to perform the lookup.
+type ServerTypeReadArgs struct {
+	IDOrName string `json:"id_or_name" jsonschema:"required,description=The Server Type id or name to be searched"`
 }
 
 // ServerTypeTools
@@ -33,22 +27,11 @@ var serverTypeTools = []Tool{
 		Restriction: RestrictionReadOnly,
 	},
 	{
-		Name:        "get_a_server_type_by_id",
-		Description: "Retrieves a ServerType by its ID. If the ServerType does not exist, nil is returned.",
-		Handler: func(args ServerTypeReadByIDArgs) (*mcpgolang.ToolResponse, error) {
+		Name:        "get_a_server_type_by_id_or_name",
+		Description: "Retrieves a ServerType by its ID or Name. Get retrieves a server type by its ID if the input can be parsed as an integer, otherwise it retrieves a server type by its name. If the server type does not exist, nil is returned.",
+		Handler: func(args ServerTypeReadArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.ServerType, error) {
-				result, _, err := client.ServerType.GetByID(context.Background(), args.ID)
-				return result, err
-			})
-		},
-		Restriction: RestrictionReadOnly,
-	},
-	{
-		Name:        "get_a_server_type_by_name",
-		Description: "Retrieves a ServerType by its Name. If the ServerType does not exist, nil is returned.",
-		Handler: func(args ServerTypeReadByNameArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() (*hcloud.ServerType, error) {
-				result, _, err := client.ServerType.GetByName(context.Background(), args.Name)
+				result, _, err := client.ServerType.Get(context.Background(), args.IDOrName)
 				return result, err
 			})
 		},

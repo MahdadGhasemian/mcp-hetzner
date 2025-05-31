@@ -7,16 +7,10 @@ import (
 	mcpgolang "github.com/metoro-io/mcp-golang"
 )
 
-// PlacementGroupReadByIDArgs represents the arguments required to read an PlacementGroup by ID.
-// It contains the PlacementGroup ID that is needed to perform the lookup.
-type PlacementGroupReadByIDArgs struct {
-	ID int64 `json:"id" jsonschema:"required,description=The Placement Group id to be searched"`
-}
-
-// PlacementGroupReadByNameArgs represents the arguments required to read an PlacementGroup by Name.
-// It contains the PlacementGroup Name that is needed to perform the lookup.
-type PlacementGroupReadByNameArgs struct {
-	Name string `json:"name" jsonschema:"required,description=The Placement Group name to be searched"`
+// PlacementGroupReadArgs represents the arguments required to read an PlacementGroup by ID or Name.
+// It contains the PlacementGroup ID or Name that is needed to perform the lookup.
+type PlacementGroupReadArgs struct {
+	IDOrName string `json:"id_or_name" jsonschema:"required,description=The Placement Group id or name to be searched"`
 }
 
 // PlacementGroupTools
@@ -33,22 +27,11 @@ var placementGroupTools = []Tool{
 		Restriction: RestrictionReadOnly,
 	},
 	{
-		Name:        "get_a_placement_group_by_id",
-		Description: "Retrieves a PlacementGroup by its ID. If the PlacementGroup does not exist, nil is returned.",
-		Handler: func(args PlacementGroupReadByIDArgs) (*mcpgolang.ToolResponse, error) {
+		Name:        "get_a_placement_group_by_id_or_name",
+		Description: "Retrieves a PlacementGroup by its ID or Name.",
+		Handler: func(args PlacementGroupReadArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.PlacementGroup, error) {
-				result, _, err := client.PlacementGroup.GetByID(context.Background(), args.ID)
-				return result, err
-			})
-		},
-		Restriction: RestrictionReadOnly,
-	},
-	{
-		Name:        "get_a_placement_group_by_name",
-		Description: "Retrieves a PlacementGroup by its Name. If the PlacementGroup does not exist, nil is returned.",
-		Handler: func(args PlacementGroupReadByNameArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() (*hcloud.PlacementGroup, error) {
-				result, _, err := client.PlacementGroup.GetByName(context.Background(), args.Name)
+				result, _, err := client.PlacementGroup.Get(context.Background(), args.IDOrName)
 				return result, err
 			})
 		},

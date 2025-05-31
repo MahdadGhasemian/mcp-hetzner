@@ -7,16 +7,10 @@ import (
 	mcpgolang "github.com/metoro-io/mcp-golang"
 )
 
-// ISOReadByIDArgs represents the arguments required to read an ISO by ID.
-// It contains the ISO ID that is needed to perform the lookup.
-type ISOReadByIDArgs struct {
-	ID int64 `json:"id" jsonschema:"required,description=The ISO id to be searched"`
-}
-
-// ISOReadByNameArgs represents the arguments required to read an ISO by Name.
-// It contains the ISO Name that is needed to perform the lookup.
-type ISOReadByNameArgs struct {
-	Name string `json:"name" jsonschema:"required,description=The ISO name to be searched"`
+// ISOReadArgs represents the arguments required to read an ISO by ID or Name.
+// It contains the ISO ID or Name that is needed to perform the lookup.
+type ISOReadArgs struct {
+	IDOrName string `json:"id_or_name" jsonschema:"required,description=The ISO id or name to be searched"`
 }
 
 // ISOTools
@@ -33,22 +27,11 @@ var isoTools = []Tool{
 		Restriction: RestrictionReadOnly,
 	},
 	{
-		Name:        "get_a_iso_by_id",
-		Description: "Retrieves a ISO by its ID. If the ISO does not exist, nil is returned.",
-		Handler: func(args ISOReadByIDArgs) (*mcpgolang.ToolResponse, error) {
+		Name:        "get_a_iso_by_id_or_name",
+		Description: "Retrieves a ISO by its ID or Name.",
+		Handler: func(args ISOReadArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.ISO, error) {
-				result, _, err := client.ISO.GetByID(context.Background(), args.ID)
-				return result, err
-			})
-		},
-		Restriction: RestrictionReadOnly,
-	},
-	{
-		Name:        "get_a_iso_by_name",
-		Description: "Retrieves a ISO by its Name. If the ISO does not exist, nil is returned.",
-		Handler: func(args ISOReadByNameArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() (*hcloud.ISO, error) {
-				result, _, err := client.ISO.GetByName(context.Background(), args.Name)
+				result, _, err := client.ISO.Get(context.Background(), args.IDOrName)
 				return result, err
 			})
 		},

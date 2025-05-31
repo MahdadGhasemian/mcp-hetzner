@@ -7,16 +7,10 @@ import (
 	mcpgolang "github.com/metoro-io/mcp-golang"
 )
 
-// LoadBalancerReadByIDArgs represents the arguments required to read an LoadBalancer by ID.
-// It contains the LoadBalancer ID that is needed to perform the lookup.
-type LoadBalancerReadByIDArgs struct {
-	ID int64 `json:"id" jsonschema:"required,description=The Load Balancer id to be searched"`
-}
-
-// LoadBalancerReadByNameArgs represents the arguments required to read an LoadBalancer by Name.
-// It contains the LoadBalancer Name that is needed to perform the lookup.
-type LoadBalancerReadByNameArgs struct {
-	Name string `json:"name" jsonschema:"required,description=The Load Balancer name to be searched"`
+// LoadBalancerReadArgs represents the arguments required to read an LoadBalancer by ID or Name.
+// It contains the LoadBalancer ID or Name that is needed to perform the lookup.
+type LoadBalancerReadArgs struct {
+	IDOrName string `json:"id_or_name" jsonschema:"required,description=The Load Balancer id or name to be searched"`
 }
 
 // LoadBalancerTools
@@ -33,22 +27,11 @@ var loadBalancerTools = []Tool{
 		Restriction: RestrictionReadOnly,
 	},
 	{
-		Name:        "get_a_load_balancer_by_id",
-		Description: "Retrieves a LoadBalancer by its ID. If the LoadBalancer does not exist, nil is returned.",
-		Handler: func(args LoadBalancerReadByIDArgs) (*mcpgolang.ToolResponse, error) {
+		Name:        "get_a_load_balancer_by_id_or_name",
+		Description: "Retrieves a LoadBalancer by its ID or Name. Get retrieves a load balancer by its ID if the input can be parsed as an integer, otherwise it retrieves a load balancer by its name. If the load balancer does not exist, nil is returned.",
+		Handler: func(args LoadBalancerReadArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.LoadBalancer, error) {
-				result, _, err := client.LoadBalancer.GetByID(context.Background(), args.ID)
-				return result, err
-			})
-		},
-		Restriction: RestrictionReadOnly,
-	},
-	{
-		Name:        "get_a_load_balancer_by_name",
-		Description: "Retrieves a LoadBalancer by its Name. If the LoadBalancer does not exist, nil is returned.",
-		Handler: func(args LoadBalancerReadByNameArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() (*hcloud.LoadBalancer, error) {
-				result, _, err := client.LoadBalancer.GetByName(context.Background(), args.Name)
+				result, _, err := client.LoadBalancer.Get(context.Background(), args.IDOrName)
 				return result, err
 			})
 		},

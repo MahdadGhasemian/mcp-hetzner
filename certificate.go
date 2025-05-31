@@ -8,16 +8,10 @@ import (
 	mcpgolang "github.com/metoro-io/mcp-golang"
 )
 
-// CertificateReadByIDArgs represents the arguments required to read an Certificate by ID.
-// It contains the Certificate ID that is needed to perform the lookup.
-type CertificateReadByIDArgs struct {
-	ID int64 `json:"id" jsonschema:"required,description=The certificate id to be searched"`
-}
-
-// CertificateReadByNameArgs represents the arguments required to read an Certificate by Name.
-// It contains the Certificate Name that is needed to perform the lookup.
-type CertificateReadByNameArgs struct {
-	Name string `json:"name" jsonschema:"required,description=The certificate name to be searched"`
+// CertificateReadArgs represents the arguments to read an Certificate by ID or Name.
+// It contains the Certificate ID or Name that is needed to perform the lookup.
+type CertificateReadArgs struct {
+	IDOrName string `json:"id_or_name" jsonschema:"required,description=The certificate id or name to be searched"`
 }
 
 type CertificateResponse struct {
@@ -70,25 +64,11 @@ var certificateTools = []Tool{
 		Restriction: RestrictionReadOnly,
 	},
 	{
-		Name:        "get_a_certificate_by_id",
-		Description: "Retrieves a Certificate by its ID. If the Certificate does not exist, nil is returned.",
-		Handler: func(args CertificateReadByIDArgs) (*mcpgolang.ToolResponse, error) {
+		Name:        "get_a_certificate_by_id_or_name",
+		Description: "Retrieves a Certificate by its ID or Name. Get retrieves a Certificate by its ID if the input can be parsed as an integer, otherwise it retrieves a Certificate by its name. If the Certificate does not exist, nil is returned.",
+		Handler: func(args CertificateReadArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*CertificateResponse, error) {
-				result, _, err := client.Certificate.GetByID(context.Background(), args.ID)
-				if err != nil {
-					return nil, err
-				}
-				return toCertificateResponse(result), nil
-			})
-		},
-		Restriction: RestrictionReadOnly,
-	},
-	{
-		Name:        "get_a_certificate_by_name",
-		Description: "Retrieves a Certificate by its Name. If the Certificate does not exist, nil is returned.",
-		Handler: func(args CertificateReadByNameArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() (*CertificateResponse, error) {
-				result, _, err := client.Certificate.GetByName(context.Background(), args.Name)
+				result, _, err := client.Certificate.Get(context.Background(), args.IDOrName)
 				if err != nil {
 					return nil, err
 				}

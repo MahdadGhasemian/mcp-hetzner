@@ -8,22 +8,10 @@ import (
 	mcpgolang "github.com/metoro-io/mcp-golang"
 )
 
-// SSHKeyReadByIDArgs represents the arguments required to read an SSH key by ID.
-// It contains the SSH key ID that is needed to perform the lookup.
-type SSHKeyReadByIDArgs struct {
-	ID int64 `json:"id" jsonschema:"required,description=The ssh key id to be searched"`
-}
-
-// SSHKeyReadByNameArgs represents the arguments required to read an SSH key by Name.
-// It contains the SSH key Name that is needed to perform the lookup.
-type SSHKeyReadByNameArgs struct {
-	Name string `json:"name" jsonschema:"required,description=The ssh key name to be searched"`
-}
-
-// SSHKeyReadByFingerprintArgs represents the arguments required to read an SSH key by Fingerprint.
-// It contains the SSH key Fingerprint that is needed to perform the lookup.
-type SSHKeyReadByFingerprintArgs struct {
-	Fingerprint string `json:"fingerprint" jsonschema:"required,description=The ssh key fingerprint to be searched"`
+// SSHKeyReadArgs represents the arguments required to read an SSH key by ID or Name.
+// It contains the SSH key ID or Name that is needed to perform the lookup.
+type SSHKeyReadArgs struct {
+	IDOrName string `json:"id_or_name" jsonschema:"required,description=The ssh key id or name to be searched"`
 }
 
 type SSHKeyResponse struct {
@@ -71,33 +59,11 @@ var sshkeyTools = []Tool{
 		Restriction: RestrictionReadOnly,
 	},
 	{
-		Name:        "get_a_ssh_key_by_id",
-		Description: "Retrieves a SSH key by its ID, it returns a specific ssh key object info. If the SSH key does not exist, nil is returned.",
-		Handler: func(args SSHKeyReadByIDArgs) (*mcpgolang.ToolResponse, error) {
+		Name:        "get_a_ssh_key_by_id_or_name",
+		Description: "Retrieves a SSH key by its ID or Name, Get retrieves a SSH key by its ID if the input can be parsed as an integer, otherwise it retrieves a SSH key by its name. If the SSH key does not exist, nil is returned.",
+		Handler: func(args SSHKeyReadArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*SSHKeyResponse, error) {
-				result, _, err := client.SSHKey.GetByID(context.Background(), args.ID)
-				return tossSSHKeyResponse(result), err
-			})
-		},
-		Restriction: RestrictionReadOnly,
-	},
-	{
-		Name:        "get_a_ssh_key_by_name",
-		Description: "Retrieves a SSH key by its Name. If the SSH key does not exist, nil is returned.",
-		Handler: func(args SSHKeyReadByNameArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() (*SSHKeyResponse, error) {
-				result, _, err := client.SSHKey.GetByName(context.Background(), args.Name)
-				return tossSSHKeyResponse(result), err
-			})
-		},
-		Restriction: RestrictionReadOnly,
-	},
-	{
-		Name:        "get_a_ssh_key_by_fingerprint",
-		Description: "Retrieves a SSH key by its Fingerprint. If the SSH key does not exist, nil is returned.",
-		Handler: func(args SSHKeyReadByFingerprintArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() (*SSHKeyResponse, error) {
-				result, _, err := client.SSHKey.GetByName(context.Background(), args.Fingerprint)
+				result, _, err := client.SSHKey.Get(context.Background(), args.IDOrName)
 				return tossSSHKeyResponse(result), err
 			})
 		},

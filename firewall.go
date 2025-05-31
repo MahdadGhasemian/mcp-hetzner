@@ -43,16 +43,10 @@ type FirewallResource struct {
 	LabelSelector FirewallResourceLabelSelector `json:"label_selector,omitempty"`
 }
 
-// FirewallReadByIDArgs represents the arguments required to read an Firewall by ID.
-// It contains the Firewall ID that is needed to perform the lookup.
-type FirewallReadByIDArgs struct {
-	ID int64 `json:"id" jsonschema:"required,description=The firewall id to be searched"`
-}
-
-// FirewallReadByNameArgs represents the arguments required to read an Firewall by Name.
-// It contains the Firewall Name that is needed to perform the lookup.
-type FirewallReadByNameArgs struct {
-	Name string `json:"name" jsonschema:"required,description=The firewall name to be searched"`
+// FirewallReadArgs represents the arguments required to read an Firewall by ID or Name.
+// It contains the Firewall ID or Name that is needed to perform the lookup.
+type FirewallReadArgs struct {
+	IDOrName string `json:"id_or_name" jsonschema:"required,description=The firewall id or name to be searched"`
 }
 
 // FirewallCreateArgs contains the necessary fields to create a new firewall,
@@ -156,22 +150,11 @@ var firewallTools = []Tool{
 		Restriction: RestrictionReadOnly,
 	},
 	{
-		Name:        "get_a_firewall_by_id",
-		Description: "Retrieves a Firewall by its ID. If the Firewall does not exist, nil is returned.",
-		Handler: func(args FirewallReadByIDArgs) (*mcpgolang.ToolResponse, error) {
+		Name:        "get_a_firewall_by_id_or_name",
+		Description: "Retrieves a Firewall by its ID or Name, Get retrieves a Firewall by its ID if the input can be parsed as an integer, otherwise it retrieves a Firewall by its name. If the Firewall does not exist, nil is returned.",
+		Handler: func(args FirewallReadArgs) (*mcpgolang.ToolResponse, error) {
 			return handleResponse(func() (*hcloud.Firewall, error) {
-				result, _, err := client.Firewall.GetByID(context.Background(), args.ID)
-				return result, err
-			})
-		},
-		Restriction: RestrictionReadOnly,
-	},
-	{
-		Name:        "get_a_firewall_by_name",
-		Description: "Retrieves a Firewall by its Name. If the Firewall does not exist, nil is returned.",
-		Handler: func(args FirewallReadByNameArgs) (*mcpgolang.ToolResponse, error) {
-			return handleResponse(func() (*hcloud.Firewall, error) {
-				result, _, err := client.Firewall.GetByName(context.Background(), args.Name)
+				result, _, err := client.Firewall.Get(context.Background(), args.IDOrName)
 				return result, err
 			})
 		},
